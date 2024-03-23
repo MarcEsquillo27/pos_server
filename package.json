@@ -1,0 +1,21 @@
+{
+  "name": "node-app",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.18.1",
+    "fs": "^0.0.1-security",
+    "helmet": "^5.1.0",
+    "knex": "^2.1.0",
+    "moment": "^2.29.4",
+    "mssql": "^8.1.2",
+    "mysql": "^2.18.1",
+    "nano": "^10.0.0",
+    "nodemon": "^2.0.19",
+    "ssh2": "^1.11.0",
+    "vue-router": "^4.1.2",
+    "winser": "^1.0.3"
+  }
+}
