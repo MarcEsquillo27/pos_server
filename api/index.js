@@ -1,10 +1,10 @@
 const express = require('express')
 const port = 12799
 const helmet = require('helmet')
-const inventory = require('./routes/inventory.js')
-const sales = require('./routes/sales.js')
-const audit = require('./routes/audit.js')
-const category = require('./routes/category.js')
+const inventory = require('../routes/inventory.js')
+const sales = require('../routes/sales.js')
+const audit = require('../routes/audit.js')
+const category = require('../routes/category.js')
  
 const app = express()
 app.use(helmet())
