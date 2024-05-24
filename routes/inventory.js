@@ -11,19 +11,40 @@ router.use(bodyParser.json());
  
 
 //GET ALL INVETORY 
-router.get("/api/getInventory", (req, res) => {
-    let sql = `SELECT * FROM inventories`;
-    connection.raw(sql).then((body) => {
-        res.send(body[0]);
-    }).catch(error => {
+router.get("/api/getInventory", async (req, res) => {
+    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
+    const pageSize = parseInt(req.query.page_size) || 12; // Default to 12 items per page if not provided
+    const offset = (page - 1) * pageSize;
+
+    try {
+        const totalItemsQuery = `SELECT COUNT(*) as count FROM inventories`;
+        const totalItemsResult = await connection.raw(totalItemsQuery);
+        const totalItems = totalItemsResult[0][0].count;
+
+        const sql = `SELECT inventories.*, discount.discount_value, category.categoryName
+        FROM inventories
+        LEFT JOIN discount ON inventories.discount_id = discount.id
+        LEFT JOIN category ON inventories.categoryID = category.categoryID
+        LIMIT ? OFFSET ?`;
+
+        const productsResult = await connection.raw(sql, [pageSize, offset]);
+
+        res.send({
+            products: productsResult[0],
+            totalItems: totalItems
+        });
+    } catch (error) {
         console.error(error);
         res.status(500).send("Internal Server Error");
-    });
+    }
 });
 //GET PER ITEM
 router.get("/api/getPerItem/:item", (req, res) => {
     let item = req.params.item
-    let sql = `SELECT * FROM inventories WHERE productNumber = '${item}'`;
+    let sql = `SELECT inventories.*, discount.discount_value
+    FROM inventories
+    LEFT JOIN discount ON inventories.discount_id = discount.id
+    WHERE inventories.productNumber = '${item}'`;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {
@@ -38,7 +59,7 @@ router.post("/api/addInventory", (req, res) => {
   let unit = req.body.unit
   let item = req.body.item
   let brand = req.body.brand
-  let category = req.body.category
+  let categoryID = req.body.categoryID
   let description = req.body.description
   let stock = parseInt(req.body.stock)
   let originalPrice = parseInt(req.body.originalPrice)
@@ -50,14 +71,13 @@ router.post("/api/addInventory", (req, res) => {
     item,
     unit,
     brand,
-    category,
+    categoryID,
     description,
     stock,
     originalPrice,
     salesPrice,
-    discount,
     date) 
-  VALUES ('${productNumber}','${item}','${unit}','${brand}','${category}','${description}','${stock}','${originalPrice}','${salesPrice}','${discount}','${date}');`;
+  VALUES ('${productNumber}','${item}','${unit}','${brand}','${categoryID}','${description}','${stock}','${originalPrice}','${salesPrice}','${date}');`;
   connection.raw(sql).then((body) => {
       res.send(body[0]);
   }).catch(error => {

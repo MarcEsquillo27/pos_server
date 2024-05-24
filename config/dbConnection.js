@@ -20,4 +20,23 @@ const connection = knex({
     },
 });
 
+// const connection = knex({
+//     client: "mysql",
+//     connection: {
+//         host: "localhost",
+//         user: "root",
+//         password: "admin",
+//         database: "pos",
+//         port: 3306,
+//         // options: {
+//         //     enableArithAbort: false,
+//         //     encrypt: false,
+//         // },
+//         pool: {
+//             max: 25,
+//             min: 0,
+//             idle: 10000
+//         },
+//     },
+// });
 module.exports = connection;
