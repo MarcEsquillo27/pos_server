@@ -12,24 +12,27 @@ const void_data = require('../routes/void.js')
 const login = require('../routes/login.js')
 const cors = require('cors')
 
-
 // middleware
 const verifyToken = require('../routes/auth_mid.js')
  
 const app = express()
 app.use(helmet())
 
-app.use(cors())
+// Configure CORS to allow requests from your frontend's domain
+app.use(cors({
+  origin: 'http://77.37.54.179',
+  credentials: true // Include cookies in the CORS request, if any
+}))
  
-app.use('/inventory', verifyToken , inventory)
-app.use('/sales', sales)
-app.use('/audit', audit)
-app.use('/category',category)
-app.use('/discount', discount)
-app.use('/account' , account)
+app.use('/inventory' ,verifyToken, inventory)
+app.use('/sales', verifyToken,sales)
+app.use('/audit', verifyToken,audit)
+app.use('/category',verifyToken,category)
+app.use('/discount', verifyToken,discount)
+app.use('/account' , verifyToken,account)
 app.use('/login' ,login)
-app.use('/void',void_data)
+app.use('/void',verifyToken,void_data)
  
-app.listen(port,function(){
-	console.log('listening to port ' + port);
+app.listen(port, function() {
+  console.log('listening to port ' + port);
 })

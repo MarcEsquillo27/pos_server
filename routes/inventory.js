@@ -11,6 +11,23 @@ router.use(bodyParser.json());
  
 
 //GET ALL INVETORY 
+router.get("/api/getAllInvetory", async (req,res)=>{
+    const sql = `SELECT inventories.*, discount.discount_value, category.categoryName
+    FROM inventories
+    LEFT JOIN discount ON inventories.discount_id = discount.id
+    LEFT JOIN category ON inventories.categoryID = category.categoryID
+    WHERE discount_id IS NULL
+    `
+    connection.raw(sql).then((body) => {
+        res.send(body[0]);
+        // console.log(body[0])
+    }).catch(error => {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    });
+})
+
+
 router.get("/api/getInventory", async (req, res) => {
     const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
     const pageSize = parseInt(req.query.page_size) || 12; // Default to 12 items per page if not provided
