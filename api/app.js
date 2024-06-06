@@ -33,8 +33,8 @@ app.use('/void', verifyToken, void_data);
 
 // HTTPS options
 const httpsOptions = {
-	key: fs.readFileSync('../../etc/ssl/private/your_private_key.key'), // Path to your private key
-	cert: fs.readFileSync('../../etc/ssl/certs/your_certificate.crt') // Path to your SSL/TLS certificate
+	key: fs.readFileSync('../../../../etc/ssl/private/your_private_key.key'), // Path to your private key
+	cert: fs.readFileSync('../../../../etc/ssl/private/your_private_key.key') // Path to your SSL/TLS certificate
   };
   
 const port = 443; // HTTPS default port
