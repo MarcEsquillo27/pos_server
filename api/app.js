@@ -20,8 +20,8 @@ app.use(cors());
 
 // Specify the path to your SSL certificate and private key
 const sslOptions = {
-	key: fs.readFileSync('/etc/ssl/certs/skriptr.tech.key'),
-	cert: fs.readFileSync('/etc/ssl/certs/skriptr.tech.crt')
+	key: fs.readFileSync('../../../etc/ssl/certs/SSL.com_TLS_ECC_Root_CA_2022.pem'),
+	cert: fs.readFileSync('../../../etc/ssl/certs/SSL.com_TLS_RSA_Root_CA_2022.pem')
   };
   
 
