@@ -35,7 +35,7 @@ bcrypt.compare(plainTextPassword, storedHashedPassword, function(err, result) {
     }
     if (result) {
         console.log("Passwords match!");
-        const token = jwt.sign({ userdetails: body[0] }, process.env.secret_key, {expiresIn: '3h' });
+        const token = jwt.sign({ userdetails: body[0] }, process.env.secret_key);
 
         res.status(200).json({ token:token, userdetails:  body[0] });
         

@@ -71,13 +71,12 @@ bcrypt.hash(req.body.password, saltRounds)
         let password = cryp_password
         let fullname = req.body.fullname
         let access = JSON.stringify(req.body.access)
-        let drawer_access = JSON.stringify(req.body.drawer_access)
+        // let drawer_access = JSON.stringify(req.body.drawer_access)
             let sql = `INSERT INTO accounts (username,
                         password,
                         fullname,
-                        access,
-                        drawer_access) 
-                        VALUES ('${username}','${password}','${fullname}','${access}','${drawer_access}');`;
+                        access) 
+                        VALUES ('${username}','${password}','${fullname}','${access}');`;
             connection.raw(sql).then((body) => {
             res.send(body[0]);
             }).catch(error => {
@@ -107,7 +106,6 @@ router.post("/api/updateAccount", (req, res) => {
         let username = req.body.username
         let fullname = req.body.fullname
         req.body.access = JSON.stringify(req.body.access)
-        req.body.drawer_access = JSON.stringify(req.body.drawer_access)
 
          let bodyArray = [req.body]
     let promises = [];
