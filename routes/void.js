@@ -13,7 +13,7 @@ router.use(bodyParser.json());
 
 router.get("/api/getVoid/:date1/:date2", (req, res) => {
     let sql = `SELECT *
-    FROM void WHERE date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59'`;
+    FROM void WHERE date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59' ORDER BY date DESC`;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {

@@ -12,7 +12,7 @@ router.use(bodyParser.json());
 
 //GET ALL SALES 
 router.get("/api/getLogs/:startDate/:endDate", (req, res) => {
-    let sql = `SELECT * FROM logs WHERE date BETWEEN '${req.params.startDate} 00:00:00' AND '${req.params.endDate} 23:59:59'`;
+    let sql = `SELECT * FROM logs WHERE date BETWEEN '${req.params.startDate} 00:00:00' AND '${req.params.endDate} 23:59:59' ORDER BY date DESC`;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {

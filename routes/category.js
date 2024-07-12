@@ -12,7 +12,7 @@ router.use(bodyParser.json());
 
 //GET ALL INVETORY 
 router.get("/api/getCategory", (req, res) => {
-    let sql = `SELECT * FROM category`;
+    let sql = `SELECT * FROM category ORDER BY date DESC`;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {

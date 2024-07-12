@@ -10,6 +10,8 @@ const discount = require('../routes/discount.js')
 const account = require('../routes/account.js')
 const void_data = require('../routes/void.js')
 const login = require('../routes/login.js')
+const pending = require('../routes/pending.js')
+const storename = require('../routes/storename.js')
 const cors = require('cors')
 
 
@@ -29,6 +31,8 @@ app.use('/discount', verifyToken,discount)
 app.use('/account' , verifyToken,account)
 app.use('/login' ,login)
 app.use('/void',verifyToken,void_data)
+app.use('/pending',verifyToken,pending)
+app.use('/storename',storename)
  
 app.listen(port,function(){
 	console.log('listening to port ' + port);

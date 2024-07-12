@@ -26,10 +26,11 @@ router.get("/api/getSalesExtraction/:date1/:date2", (req, res) => {
 
 //GET ALL SALES 
 router.get("/api/getSales/:date1/:date2", (req, res) => {
-    let sql = `SELECT s.salesID, COUNT(*) AS item_count, SUM(s.total) AS total_sum, s.date
+    let sql = `SELECT s.salesID, COUNT(*) AS item_count, SUM(s.total) AS total_sum,s.transaction_by, s.date
     FROM sales s 
     WHERE s.date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59'
-    GROUP BY s.salesID, s.date
+    GROUP BY s.salesID, s.date,s.transaction_by
+    ORDER BY s.date DESC
     `;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
@@ -40,9 +41,13 @@ router.get("/api/getSales/:date1/:date2", (req, res) => {
 });
 
 router.get("/api/getAllSales", (req, res) => {
-    let sql = `SELECT s.salesID, COUNT(*) AS item_count, SUM(s.total) AS total_sum
-    FROM sales s
-    GROUP BY s.salesID;`;
+    let sql = `SELECT salesID, item_count, total_sum
+    FROM (
+        SELECT s.salesID, COUNT(*) AS item_count, SUM(s.total) AS total_sum, MAX(s.date) AS date
+        FROM sales s
+        GROUP BY s.salesID
+    ) AS subquery
+    ORDER BY date DESC;`;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {
@@ -66,13 +71,13 @@ router.get("/api/getbySalesId/:salesID", (req, res) => {
 });
 
 // INSERT SALES
-router.post("/api/addSales", (req, res) => {
+router.post("/api/addSales/:name", (req, res) => {
     let promises = [];
     
     req.body.forEach(element => {
         element.salesID = moment().format("YYYYMMDDhhmmss")
-        let sql = `INSERT INTO sales (salesID,productNumber, quantity, total,date)
-        VALUES ('${element.salesID}','${element.productNumber}','${element.quantity}','${element.subtotal}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
+        let sql = `INSERT INTO sales (salesID,productNumber, quantity, total,transaction_by,date)
+        VALUES ('${element.salesID}','${element.productNumber}','${element.quantity}','${element.subtotal}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 
@@ -146,5 +151,16 @@ router.post("/api/updateSales", (req, res) => {
             console.error(error);
             res.status(500).send("Internal Server Error");
         });
+});
+
+//DELETE SALES ID
+router.get("/api/deletebySalesId/:id", (req, res) => {
+    let sql = `DELETE FROM sales WHERE id=${req.params.id}`;
+    connection.raw(sql).then((body) => {
+        res.send(body[0]);
+    }).catch(error => {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    });
 });
 module.exports = router;
