@@ -9,6 +9,30 @@ router.use(cors());
 router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
 
+
+router.get("/api/latestSalesID", (req, res) => {
+    let sql = `-- Get the current last_id and calculate the next ID
+SELECT 
+    CONCAT(
+        LEFT(last_id, 8),                  -- Date part (YYYYMMDD)
+        LPAD(RIGHT(last_id, 5) + 1, 5, '0') -- Increment part (00001, 00002, etc.)
+    ) AS predicted_next_id
+FROM 
+    id_generator
+WHERE 
+    (DATE_FORMAT(CURDATE(), '%Y%m%d') = LEFT(last_id, 8) 
+    AND RIGHT(last_id, 5) < 99999) -- Only increment if date is the same and not at max value
+    OR (DATE_FORMAT(CURDATE(), '%Y%m%d') != LEFT(last_id, 8)) -- Reset if date is different
+LIMIT 1;
+`;
+    connection.raw(sql).then((body) => {
+        res.send(body[0]);
+    }).catch(error => {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    });
+});
+
 //GET ALL SALES EXRACTION
 router.get("/api/getSalesExtraction/:date1/:date2", (req, res) => {
     let sql = `SELECT s.id,s.salesID,s.productNumber,i.item,i.salesPrice,s.quantity,s.total,s.date 
@@ -71,25 +95,41 @@ router.get("/api/getbySalesId/:salesID", (req, res) => {
 });
 
 // INSERT SALES
-router.post("/api/addSales/:name", (req, res) => {
+router.post("/api/addSales/:name/:mode_payment", (req, res) => {
     let promises = [];
     
     req.body.forEach(element => {
-        element.salesID = moment().format("YYYYMMDDhhmmss")
-        let sql = `INSERT INTO sales (salesID,productNumber, quantity, total,transaction_by,date)
-        VALUES ('${element.salesID}','${element.productNumber}','${element.quantity}','${element.subtotal}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
-        promises.push(connection.raw(sql));
+        let sql = `
+            INSERT INTO sales (productNumber, quantity, total, transaction_by, mode_payment, date)
+            VALUES (?, ?, ?, ?, ?, ?);
+        `;
+        let values = [  
+            element.productNumber,
+            element.quantity,
+            element.subtotal,
+            req.params.name,
+            req.params.mode_payment,
+            moment(element.data).format("YYYY-MM-DD hh:mm:ss")
+        ];
+        promises.push(
+            connection.raw(sql, values).then(() => {
+                return connection.raw('SELECT salesID FROM sales ORDER BY salesID DESC LIMIT 1;')
+                    .then(idResult => idResult[0][0].salesID);
+            })
+        );
     });
 
     Promise.all(promises)
-        .then(results => {
-            res.send(results.map(result => result[0])); // Send an array of results
+        .then(salesIDs => {
+            res.send(salesIDs); // Send an array of salesID
         })
         .catch(error => {
             console.error(error);
             res.status(500).send("Internal Server Error");
         });
 });
+
+
 
 // UPDATE STOCK
 router.post("/api/updateInventoryStock", (req, res) => {

@@ -11,6 +11,22 @@ router.use(bodyParser.json());
  
 
 
+
+
+router.put("/api/updateRecieptStore/:id/:receipt", (req, res) => {
+    let id = req.params.id
+    let receipt = req.params.receipt
+    let sql = `UPDATE storename
+    SET receipt = '${receipt}'
+    WHERE id = ${id}`;
+    connection.raw(sql).then((body) => {
+        res.send(body[0]);
+    }).catch(error => {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    });
+});
+
 router.put("/api/updateStore/:id", (req, res) => {
     let id = req.params.id
     let name = req.body.name
