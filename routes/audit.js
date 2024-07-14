@@ -28,8 +28,8 @@ router.post("/api/addLogs", (req, res) => {
     let promises = [];
     
     bodyArr.forEach(element => {
-        let sql = `INSERT INTO logs (action,description, product_number, quantity,drawerLink,date)
-        VALUES ('${element.action}','${element.description}','${element.product_number}','${element.quantity}','${element.drawer_link}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
+        let sql = `INSERT INTO logs (action,description, product_number, quantity,transaction_by,drawerLink,date)
+        VALUES ('${element.action}','${element.description}','${element.product_number}','${element.quantity}','${element.transaction_by}','${element.drawer_link}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 
