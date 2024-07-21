@@ -99,24 +99,10 @@ router.post("/api/addSales/:name/:mode_payment", (req, res) => {
     let promises = [];
     
     req.body.forEach(element => {
-        let sql = `
-            INSERT INTO sales (productNumber, quantity, total, transaction_by, mode_payment, date)
-            VALUES (?, ?, ?, ?, ?, ?);
-        `;
-        let values = [  
-            element.productNumber,
-            element.quantity,
-            element.subtotal,
-            req.params.name,
-            req.params.mode_payment,
-            moment(element.data).format("YYYY-MM-DD hh:mm:ss")
-        ];
-        promises.push(
-            connection.raw(sql, values).then(() => {
-                return connection.raw('SELECT salesID FROM sales ORDER BY salesID DESC LIMIT 1;')
-                    .then(idResult => idResult[0][0].salesID);
-            })
-        );
+        element.salesID = moment().format("YYYYMMDDhhmmss")
+        let sql = `INSERT INTO sales (salesID,productNumber, quantity, total,transaction_by,date)
+        VALUES ('${element.salesID}','${element.productNumber}','${element.quantity}','${element.subtotal}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
+        promises.push(connection.raw(sql));
     });
 
     Promise.all(promises)
