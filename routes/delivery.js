@@ -87,9 +87,8 @@ router.post("/api/addDelivery", (req, res) => {
   });
 
 //UPDATE INVENTORIES
-router.get("/api/updateDelivery/:id", (req, res) => {
-    console.log(req.params.id)
-    let id = req.params.id
+router.put("/api/updateDelivery", (req, res) => {
+    let id = req.body.id
     let date = moment().format("YYYY-MM-DD HH:mm:ss")
     let sql = `UPDATE deliveryschedule
     SET delivery_date = '${date}', delivery_status = 'Finished'

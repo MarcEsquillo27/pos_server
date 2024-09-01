@@ -11,9 +11,8 @@ router.use(bodyParser.json());
  
 
 
-router.get("/api/deletePending/:id", (req, res) => {
-    console.log(req.params.id)
-    let id = req.params.id
+router.delete("/api/deletePending", (req, res) => {
+    let id = req.body.id
     let date = moment().format("YYYY-MM-DD HH:mm:ss")
     let sql = `UPDATE pending
     SET deleted_date = '${date}'

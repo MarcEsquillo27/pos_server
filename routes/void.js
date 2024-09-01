@@ -27,7 +27,7 @@ router.get("/api/getVoid/:date1/:date2", (req, res) => {
 
 // INSERT SALES
 router.post("/api/addVoid", (req, res) => {
-    // console.log(req.body)
+    console.log(req.body)
     let promises = [];
     
     req.body.forEach(element => {

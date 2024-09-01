@@ -61,7 +61,7 @@ router.get("/api/getPerItem/:item", (req, res) => {
     let sql = `SELECT inventories.*, discount.discount_value
     FROM inventories
     LEFT JOIN discount ON inventories.discount_id = discount.id
-    WHERE inventories.productNumber = '${item}'`;
+    WHERE inventories.productNumber = '${item}' OR inventories.item = '${item}' `;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {
@@ -134,8 +134,9 @@ router.post("/api/updateInventory", (req, res) => {
 router.post("/api/updateInventoryStock", (req, res) => {
     console.log(req.body);
     let promises = [];
-    
-    req.body.forEach(element => {
+    // let arrBody = []
+    let bodyArray = [req.body]
+    bodyArray.forEach(element => {
         let sql = `UPDATE inventories
                    SET stock = '${element.stock}'
                    WHERE productNumber = '${element.productNumber}';`;

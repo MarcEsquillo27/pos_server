@@ -97,8 +97,9 @@ router.get("/api/getbySalesId/:salesID", (req, res) => {
 // INSERT SALES
 router.post("/api/addSales/:name/:mode_payment", (req, res) => {
     let promises = [];
-    
-    req.body.forEach(element => {
+    // let arrBody = []
+    let bodyArray = [req.body]
+    bodyArray.forEach(element => {
         element.salesID = moment().format("YYYYMMDDhhmmss")
         let sql = `INSERT INTO sales (salesID,productNumber, quantity, total,transaction_by,date)
         VALUES ('${element.salesID}','${element.productNumber}','${element.quantity}','${element.subtotal}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;

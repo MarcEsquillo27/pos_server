@@ -19,6 +19,7 @@ router.get('/sampleLang', verifyToken, (req,res) =>{
 
 
 router.get("/api/getPerAccount/:username/:password", (req, res) => {
+    console.log("NAGANA")
     let username = req.params.username
     let sql = `SELECT * FROM accounts WHERE username = '${username}'`;
     connection.raw(sql).then((body) => {
@@ -35,7 +36,7 @@ bcrypt.compare(plainTextPassword, storedHashedPassword, function(err, result) {
     }
     if (result) {
         console.log("Passwords match!");
-        const token = jwt.sign({ userdetails: body[0] }, process.env.secret_key);
+        const token = jwt.sign({ userdetails: body[0] }, process.env.secret_key,{ expiresIn: '2h',});
 
         res.status(200).json({ token:token, userdetails:  body[0] });
         
