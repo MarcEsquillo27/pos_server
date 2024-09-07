@@ -96,6 +96,7 @@ router.get("/api/getbySalesId/:salesID", (req, res) => {
 
 // INSERT SALES
 router.post("/api/addSales/:name/:mode_payment", (req, res) => {
+    console.log(req.body,"99")
     let promises = [];
     // let arrBody = []
     let bodyArray = [req.body]

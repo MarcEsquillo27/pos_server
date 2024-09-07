@@ -13,6 +13,7 @@ const login = require('../routes/login.js')
 const pending = require('../routes/pending.js')
 const storename = require('../routes/storename.js')
 const delivery = require('../routes/delivery.js')
+const pwd = require('../routes/pwd.js')
 const cors = require('cors')
 
 
@@ -35,6 +36,7 @@ app.use('/login' ,login)
 app.use('/void',verifyToken,void_data)
 app.use('/pending',verifyToken,pending)
 app.use('/storename',storename)
+app.use('/pwd',verifyToken,pwd)
  
 app.listen(port,function(){
 	console.log('listening to port ' + port);

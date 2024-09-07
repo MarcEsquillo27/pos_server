@@ -16,7 +16,6 @@ router.get("/api/getAllInvetory", async (req,res)=>{
     FROM inventories
     LEFT JOIN discount ON inventories.discount_id = discount.id
     LEFT JOIN category ON inventories.categoryID = category.categoryID
-    WHERE discount_id IS NULL
     `
     connection.raw(sql).then((body) => {
         res.send(body[0]);
@@ -105,7 +104,7 @@ router.post("/api/addInventory", (req, res) => {
 
 //UPDATE INVENTORY
 router.post("/api/updateInventory", (req, res) => {
-    console.log(req.body);
+    console.log(req.body,"108");
     let bodyArray = [req.body]
     let promises = [];
     

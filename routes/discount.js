@@ -45,4 +45,39 @@ router.post("/api/addDiscount", (req, res) => {
   });
 });
 
+router.post("/api/updateDiscount", (req, res) => {
+    let bodyArray = [req.body]
+    let promises = [];
+    
+    bodyArray.forEach(element => {
+        let setValues = Object.keys(element).map(key => `${key} = '${element[key]}'`).join(', ');
+        let whereCondition = `id = '${element.id}'`;
+        let sql = `UPDATE discount
+                   SET ${setValues}
+                   WHERE ${whereCondition};`;
+        
+        promises.push(connection.raw(sql));
+    });
+
+    Promise.all(promises)
+        .then(results => {
+            res.send(results.map(result => result[0])); // Send an array of results
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(500).send("Internal Server Error");
+        });
+});
+
+router.post("/api/deleteDiscount", (req, res) => {
+    let id = req.body.id
+    let sql = `DELETE FROM discount WHERE id = ${id}`;
+    connection.raw(sql).then((body) => {
+        res.send(body[0]);
+    }).catch(error => {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    });
+  });
+
 module.exports = router;
