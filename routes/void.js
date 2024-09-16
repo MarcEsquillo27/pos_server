@@ -31,9 +31,8 @@ router.post("/api/addVoid", (req, res) => {
     let promises = [];
     
     req.body.forEach(element => {
-        element.salesID = moment().format("YYYYMMDDhhmmss")
-        let sql = `INSERT INTO void (productNumber,item, quantity, date)
-        VALUES ('${element.productNumber}','${element.item}','${element.quantity}','${moment().format("YYYY-MM-DD hh:mm:ss")}');`;
+        let sql = `INSERT INTO void (salesID,productNumber,item, quantity,transaction_by, date)
+        VALUES ('${element.salesID}','${element.productNumber}','${element.item}','${element.quantity}','${element.transaction_by}','${moment().format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 
