@@ -50,10 +50,10 @@ router.get("/api/getSalesExtraction/:date1/:date2", (req, res) => {
 
 //GET ALL SALES 
 router.get("/api/getSales/:date1/:date2", (req, res) => {
-    let sql = `SELECT s.salesID, COUNT(*) AS item_count, SUM(s.total) AS total_sum,s.transaction_by, s.date
-    FROM sales s 
+    let sql = `SELECT s.salesID, COUNT(*) AS item_count, SUM(s.total) AS total_sum,s.transaction_by, s.reference_number,s.date,s.mode_payment
+    FROM sales s
     WHERE s.date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59'
-    GROUP BY s.salesID, s.date,s.transaction_by
+    GROUP BY s.salesID, s.date,s.transaction_by,s.reference_number,s.mode_payment
     ORDER BY s.date DESC
     `;
     connection.raw(sql).then((body) => {
@@ -96,14 +96,15 @@ router.get("/api/getbySalesId/:salesID", (req, res) => {
 
 // INSERT SALES
 router.post("/api/addSales/:name/:mode_payment/:salesID", (req, res) => {
-    console.log(req.body,"99")
     let promises = [];
-    // let arrBody = []
-    let bodyArray = [...req.body]
+    let reference_number = req.body.reference_number
+    console.log(reference_number,"99")
+
+    let bodyArray = [...req.body.products]
     bodyArray.forEach(element => {
         console.log(element,"104")
-        let sql = `INSERT INTO sales (salesID,productNumber, quantity, total,transaction_by,date)
-        VALUES ('${req.params.salesID}','${element.productNumber}','${element.quantity}','${element.subtotal}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
+        let sql = `INSERT INTO sales (salesID,productNumber,reference_number,quantity, total,mode_payment,transaction_by,date)
+        VALUES ('${req.params.salesID}','${element.productNumber}',${reference_number?`'${reference_number}'`:null},'${element.quantity}','${element.subtotal}','${req.params.mode_payment}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 
