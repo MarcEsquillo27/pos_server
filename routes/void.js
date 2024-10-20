@@ -27,12 +27,18 @@ router.get("/api/getVoid/:date1/:date2", (req, res) => {
 
 // INSERT SALES
 router.post("/api/addVoid", (req, res) => {
-    console.log(req.body)
+    console.log(req.body.void_items)
     let promises = [];
-    
-    req.body.forEach(element => {
-        let sql = `INSERT INTO void (salesID,productNumber,item, quantity,transaction_by, date)
-        VALUES ('${element.salesID}','${element.productNumber}','${element.item}','${element.quantity}','${element.transaction_by}','${moment().format("YYYY-MM-DD hh:mm:ss")}');`;
+    let mode_of_payment = ""
+    if(req.body.cashpayment){
+        mode_of_payment = "cash"
+    }
+  if(req.body.payment){
+        mode_of_payment = "epayment"
+    }
+    req.body.void_items.forEach(element => {
+        let sql = `INSERT INTO void (salesID,productNumber,item, quantity,mode_of_payment,transaction_by, date)
+        VALUES ('${element.salesID}','${element.productNumber}','${element.item}','${element.quantity}','${mode_of_payment}','${element.transaction_by}','${moment().format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 

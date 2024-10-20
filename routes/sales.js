@@ -104,7 +104,7 @@ router.post("/api/addSales/:name/:mode_payment/:salesID", (req, res) => {
     bodyArray.forEach(element => {
         console.log(element,"104")
         let sql = `INSERT INTO sales (salesID,productNumber,reference_number,quantity, total,mode_payment,transaction_by,date)
-        VALUES ('${req.params.salesID}','${element.productNumber}',${reference_number?`'${reference_number}'`:null},'${element.quantity}','${element.subtotal}','${req.params.mode_payment}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
+        VALUES ('${req.params.salesID}','${element.productNumber}',${reference_number?`'${reference_number}'`:"0"},'${element.quantity}','${element.subtotal}','${req.params.mode_payment}','${req.params.name}','${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 
