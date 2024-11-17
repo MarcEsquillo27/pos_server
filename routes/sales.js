@@ -100,13 +100,11 @@ router.post("/api/addSales/:name/:mode_payment", async (req, res) => {
     let reference_number = req.body.reference_number;
     let pay_amount = req.body.pay_amount;
     let bodyArray = [...req.body.products];
-
-    // Generate the salesID here and use it for each product entry in the `sales` table
-    const nextId = await getNextSalesId();  // Define a helper function to get the new ID
+let nexSalesID = req.body.nexSalesID
 
     bodyArray.forEach(element => {
         let sql = `INSERT INTO sales (salesID, productNumber, reference_number, quantity, total, pay_amount, mode_payment, transaction_by, date)
-        VALUES ('${nextId}', '${element.productNumber}', ${reference_number ? `'${reference_number}'` : "0"}, '${element.quantity}', '${element.subtotal}', '${pay_amount}', '${req.params.mode_payment}', '${req.params.name}', '${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
+        VALUES ('${nexSalesID}', '${element.productNumber}', ${reference_number ? `'${reference_number}'` : "0"}, '${element.quantity}', '${element.subtotal}', '${pay_amount}', '${req.params.mode_payment}', '${req.params.name}', '${moment(element.data).format("YYYY-MM-DD hh:mm:ss")}');`;
         promises.push(connection.raw(sql));
     });
 
@@ -120,22 +118,6 @@ router.post("/api/addSales/:name/:mode_payment", async (req, res) => {
         });
 });
 
-async function getNextSalesId() {
-    // Query and increment `id_generator` here
-    const result = await connection.raw("SELECT last_id FROM id_generator FOR UPDATE");
-    const lastId = result[0][0].last_id;
-    // Implement ID increment logic as in the trigger, and update `id_generator` here
-    let datePart = lastId.slice(0, 8);
-    let incrementPart = parseInt(lastId.slice(8)) + 1;
-    const currentDate = moment().format('YYYYMMDD');
-    if (currentDate !== datePart) {
-        datePart = currentDate;
-        incrementPart = 1;
-    }
-    const nextId = datePart + incrementPart.toString().padStart(5, '0');
-    await connection.raw(`UPDATE id_generator SET last_id = '${nextId}'`);
-    return nextId;
-}
 
 
 

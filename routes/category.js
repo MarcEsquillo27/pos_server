@@ -10,6 +10,19 @@ router.use(bodyParser.urlencoded({ extended: false }));
 router.use(bodyParser.json());
  
 
+router.post("/api/deleteCategory/:id", (req,res) => {
+
+    let id = req.params.id
+     
+      let sql = `DELETE FROM category WHERE id = ${id}`;
+      connection.raw(sql).then((body) => {
+          res.send(body[0]);
+      }).catch(error => {
+          console.error(error);
+          res.status(500).send("Internal Server Error");
+      });
+    });
+    
 //GET ALL INVETORY 
 router.get("/api/getCategory", (req, res) => {
     let sql = `SELECT * FROM category ORDER BY date DESC`;
@@ -69,6 +82,7 @@ router.post("/api/updateCategory", (req, res) => {
             res.status(500).send("Internal Server Error");
         });
 });
+
 
 
 
