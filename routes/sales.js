@@ -11,18 +11,9 @@ router.use(bodyParser.json());
 
 
 router.get("/api/latestSalesID", (req, res) => {
-    let sql = `-- Get the current last_id and calculate the next ID
-SELECT 
-    CONCAT(
-        LEFT(last_id, 8),                  -- Date part (YYYYMMDD)
-        LPAD(RIGHT(last_id, 5) + 1, 5, '0') -- Increment part (00001, 00002, etc.)
-    ) AS predicted_next_id
-FROM 
-    id_generator
-WHERE 
-    (DATE_FORMAT(CURDATE(), '%Y%m%d') = LEFT(last_id, 8) 
-    AND RIGHT(last_id, 5) < 99999) -- Only increment if date is the same and not at max value
-    OR (DATE_FORMAT(CURDATE(), '%Y%m%d') != LEFT(last_id, 8)) -- Reset if date is different
+    let sql = `SELECT salesID
+FROM sales
+ORDER BY id DESC
 LIMIT 1;
 `;
     connection.raw(sql).then((body) => {
