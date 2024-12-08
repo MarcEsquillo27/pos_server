@@ -19,7 +19,6 @@ router.get("/api/getAllInvetory", async (req,res)=>{
     `
     connection.raw(sql).then((body) => {
         res.send(body[0]);
-        // console.log(body[0])
     }).catch(error => {
         console.error(error);
         res.status(500).send("Internal Server Error");
@@ -131,20 +130,19 @@ router.post("/api/updateInventory", (req, res) => {
 
 //UPDATE INVENTORY LESS STOCK
 router.post("/api/updateInventoryStock", (req, res) => {
-    console.log(req.body);
     let promises = [];
-    // let arrBody = []
-    let bodyArray = [req.body]
+    let bodyArray = req.body
     bodyArray.forEach(element => {
+        console.log(element,"139")
         let sql = `UPDATE inventories
-                   SET stock = '${element.stock}'
-                   WHERE productNumber = '${element.productNumber}';`;
+                   SET stock = ${element.stock}
+                   WHERE id = ${element.id}`;
         promises.push(connection.raw(sql));
     });
 
     Promise.all(promises)
         .then(results => {
-            res.send(results.map(result => result[0])); // Send an array of results
+            res.send(results.map(result => result[0]));
         })
         .catch(error => {
             console.error(error);
