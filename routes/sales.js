@@ -30,7 +30,9 @@ router.get("/api/getSalesExtraction/:date1/:date2", (req, res) => {
     FROM sales s 
     LEFT JOIN inventories i 
     ON s.productNumber = i.productNumber
-    WHERE s.date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59'`;
+    WHERE s.date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59'
+    ORDER BY s.id DESC
+    `;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
     }).catch(error => {
@@ -45,7 +47,7 @@ router.get("/api/getSales/:date1/:date2", (req, res) => {
     FROM sales s
     WHERE s.date BETWEEN '${req.params.date1} 00:00:00' AND '${req.params.date2} 23:59:59'
     GROUP BY s.salesID, s.date,s.transaction_by,s.reference_number,s.mode_payment
-    ORDER BY s.date DESC
+    ORDER BY s.id DESC
     `;
     connection.raw(sql).then((body) => {
         res.send(body[0]);
