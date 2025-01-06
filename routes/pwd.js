@@ -22,9 +22,8 @@ router.get("/api/getPwd/:date1/:date2", (req, res) => {
 });
 // INSERT PWD
 router.post("/api/addPwdDetails", (req, res) => {
-    console.log(req.body)
   let {birth_date,age,pwd_id,last_name,first_name,middle_name,sex,sales_id,date}= req.body
-  
+  console.log(sales_id)
     let sql = `INSERT INTO pwd_logs (birth_date,
       age,
       pwd_id,
