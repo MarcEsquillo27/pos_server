@@ -36,7 +36,7 @@ router.get("/api/getInventory", async (req, res) => {
         const totalItemsResult = await connection.raw(totalItemsQuery);
         const totalItems = totalItemsResult[0][0].count;
 
-        const sql = `SELECT inventories.*, discount.discount_value, category.categoryName
+        const sql = `SELECT inventories.*, discount.discount_value, discount.status, category.categoryName
         FROM inventories
         LEFT JOIN discount ON inventories.discount_id = discount.id
         LEFT JOIN category ON inventories.categoryID = category.categoryID
@@ -56,7 +56,7 @@ router.get("/api/getInventory", async (req, res) => {
 //GET PER ITEM
 router.get("/api/getPerItem/:item", (req, res) => {
     let item = req.params.item
-    let sql = `SELECT inventories.*, discount.discount_value
+    let sql = `SELECT inventories.*, discount.discount_value,discount.status
     FROM inventories
     LEFT JOIN discount ON inventories.discount_id = discount.id
     WHERE inventories.productNumber = '${item}' OR inventories.item = '${item}' `;
