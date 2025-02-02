@@ -1,4 +1,5 @@
 const express = require('express')
+require('dotenv').config()
 const port = 12799
 const helmet = require('helmet')
 const inventory = require('../routes/inventory.js')
@@ -8,17 +9,34 @@ const category = require('../routes/category.js')
 const discount = require('../routes/discount.js')
 const account = require('../routes/account.js')
 const void_data = require('../routes/void.js')
+const login = require('../routes/login.js')
+const pending = require('../routes/pending.js')
+const storename = require('../routes/storename.js')
+const delivery = require('../routes/delivery.js')
+const pwd = require('../routes/pwd.js')
+const cors = require('cors')
+
+
+// middleware
+const verifyToken = require('../routes/auth_mid.js')
  
 const app = express()
 app.use(helmet())
+
+app.use(cors())
  
-app.use('/inventory',inventory)
-app.use('/sales',sales)
-app.use('/audit',audit)
+app.use('/inventory' ,verifyToken, inventory)
+app.use('/sales', verifyToken,sales)
+app.use('/audit', verifyToken,audit)
 app.use('/category',category)
-app.use('/discount',discount)
-app.use('/account',account)
-app.use('/void',void_data)
+app.use('/discount', verifyToken,discount)
+app.use('/account' , verifyToken,account)
+app.use('/delivery' , verifyToken,delivery)
+app.use('/login' ,login)
+app.use('/void',verifyToken,void_data)
+app.use('/pending',verifyToken,pending)
+app.use('/storename',storename)
+app.use('/pwd',verifyToken,pwd)
  
 app.listen(port,function(){
 	console.log('listening to port ' + port);
