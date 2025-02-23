@@ -1,4 +1,5 @@
 const express = require('express')
+require('dotenv').config()
 const port = 12799
 const helmet = require('helmet')
 const inventory = require('../routes/inventory.js')
@@ -8,9 +9,21 @@ const category = require('../routes/category.js')
 const discount = require('../routes/discount.js')
 const account = require('../routes/account.js')
 const void_data = require('../routes/void.js')
+const login = require('../routes/login.js')
+const pending = require('../routes/pending.js')
+const storename = require('../routes/storename.js')
+const delivery = require('../routes/delivery.js')
+const pwd = require('../routes/pwd.js')
+const cors = require('cors')
+
+
+// middleware
+const verifyToken = require('../routes/auth_mid.js')
  
 const app = express()
 app.use(helmet())
+
+app.use(cors())
  
 app.use('/inventory' ,verifyToken, inventory)
 app.use('/sales', verifyToken,sales)
