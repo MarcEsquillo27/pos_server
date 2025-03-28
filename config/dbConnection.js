@@ -3,7 +3,7 @@ const knex = require("knex");
 const connection = knex({
     client: "mysql",
     connection: {
-        host: "srv545.hstgr.io",
+        host: "auth-db612.hstgr.io",
         user: "u453296495_root",
         password: "hpO$is2024",
         database: "u453296495_hposis_db",
