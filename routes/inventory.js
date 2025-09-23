@@ -101,30 +101,36 @@ router.post("/api/addInventory", (req, res) => {
   });
 });
 
-//UPDATE INVENTORY
-router.post("/api/updateInventory", (req, res) => {
-    console.log(req.body,"108");
-    let bodyArray = [req.body]
-    let promises = [];
-    
-    bodyArray.forEach(element => {
-        let setValues = Object.keys(element).map(key => `${key} = '${element[key]}'`).join(', ');
-        let whereCondition = `productNumber = '${element.productNumber}'`;
-        let sql = `UPDATE inventories
-                   SET ${setValues}
-                   WHERE ${whereCondition};`;
-        
-        promises.push(connection.raw(sql));
-    });
+// UPDATE INVENTORY
+router.post("/api/updateInventory", async (req, res) => {
+    console.log(req.body, "108");
 
-    Promise.all(promises)
-        .then(results => {
-            res.send(results.map(result => result[0])); // Send an array of results
-        })
-        .catch(error => {
-            console.error(error);
-            res.status(500).send("Internal Server Error");
+    try {
+        const updates = Array.isArray(req.body) ? req.body : [req.body]; // handle both array and single object
+        const promises = updates.map(element => {
+            if (!element.productNumber) {
+                throw new Error("Missing productNumber in request body");
+            }
+
+            // Exclude productNumber from SET values
+            const setValues = Object.keys(element)
+                .filter(key => key !== "productNumber")
+                .map(key => `${key} = ${connection.raw("?", [element[key]])}`)
+                .join(", ");
+
+            const sql = `UPDATE inventories
+                         SET ${setValues}
+                         WHERE productNumber = ?`;
+
+            return connection.raw(sql, [element.productNumber]);
         });
+
+        const results = await Promise.all(promises);
+        res.send(results.map(result => result[0]));
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Internal Server Error");
+    }
 });
 
 
