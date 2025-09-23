@@ -27,8 +27,8 @@ router.get("/api/getAllInvetory", async (req,res)=>{
 
 
 router.get("/api/getInventory", async (req, res) => {
-    const page = parseInt(req.query.page) || 1; // Default to page 1 if not provided
-    const pageSize = parseInt(req.query.page_size) || 12; // Default to 12 items per page if not provided
+    const page = parseInt(req.query.page) || 1; 
+    const pageSize = parseInt(req.query.page_size) || 12; 
     const offset = (page - 1) * pageSize;
 
     try {
@@ -127,7 +127,6 @@ router.post("/api/updateInventory", async (req, res) => {
         const results = await Promise.all(promises);
         res.send(results.map(result => result[0]));
     } catch (error) {
-        console.error(error);
         res.status(500).send("Internal Server Error");
     }
 });
