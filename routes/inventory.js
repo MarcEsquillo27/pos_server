@@ -127,6 +127,7 @@ router.post("/api/updateInventory", async (req, res) => {
         const results = await Promise.all(promises);
         res.send(results.map(result => result[0]));
     } catch (error) {
+        console.log(error)
         res.status(500).send("Internal Server Error");
     }
 });
