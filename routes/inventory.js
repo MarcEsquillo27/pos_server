@@ -106,13 +106,12 @@ router.post("/api/updateInventory", async (req, res) => {
     console.log(req.body, "108");
 
     try {
-        const updates = Array.isArray(req.body) ? req.body : [req.body]; // handle both array and single object
+        const updates = Array.isArray(req.body) ? req.body : [req.body];
         const promises = updates.map(element => {
             if (!element.productNumber) {
                 throw new Error("Missing productNumber in request body");
             }
 
-            // Exclude productNumber from SET values
             const setValues = Object.keys(element)
                 .filter(key => key !== "productNumber")
                 .map(key => `${key} = ${connection.raw("?", [element[key]])}`)
