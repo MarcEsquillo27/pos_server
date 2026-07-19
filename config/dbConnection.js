@@ -8,15 +8,20 @@ const connection = knex({
         password: "hpO$is2024",
         database: "u453296495_hposis_db",
         port: 3306,
+        connectTimeout: 10000,
         // options: {
         //     enableArithAbort: false,
         //     encrypt: false,
         // },
-        pool: {
-            max: 25,
-            min: 0,
-            idle: 10000
-        },
+    },
+    acquireConnectionTimeout: 10000,
+    pool: {
+        min: 0,
+        max: 10,
+        acquireTimeoutMillis: 10000,
+        createTimeoutMillis: 10000,
+        idleTimeoutMillis: 10000,
+        reapIntervalMillis: 1000,
     },
 });
 
