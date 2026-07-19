@@ -40,8 +40,8 @@ router.post("/api/addDiscount", (req, res) => {
   let discount_name = req.body.discount_name
   let discount_value = req.body.discount_value
 
-  let sql = `INSERT INTO discount (discount_name,discount_value) 
-  VALUES ('${discount_name}','${discount_value}');`;
+  let sql = `INSERT INTO discount (discount_name,discount_value,status) 
+  VALUES ('${discount_name}','${discount_value}',0);`;
   connection.raw(sql).then((body) => {
       res.send(body[0]);
   }).catch(error => {
@@ -76,8 +76,13 @@ router.post("/api/updateDiscount", (req, res) => {
 
 router.post("/api/deleteDiscount", (req, res) => {
     let id = req.body.id
-    let sql = `DELETE FROM discount WHERE id = ${id}`;
+    let sql = `DELETE FROM discount WHERE id = ${id} AND status = 1`;
     connection.raw(sql).then((body) => {
+        if (body[0].affectedRows === 0) {
+            return res.status(409).send({
+                message: "Deactivate the discount category before deleting it."
+            });
+        }
         res.send(body[0]);
     }).catch(error => {
         console.error(error);
