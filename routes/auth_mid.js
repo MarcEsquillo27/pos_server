@@ -7,7 +7,13 @@ const verifyToken= (req, res, next) => {
     const token = authHeader && authHeader.split(' ')[1]
 if (!token) return res.status(401).json({ error: 'Access denied' });
     try {
-        const decoded = jwt.verify(token, process.env.secret_key);
+        const jwtSecret = process.env.JWT_SECRET || process.env.secret_key;
+
+        if (!jwtSecret) {
+            return res.status(503).json({ message: "Authentication is not configured." });
+        }
+
+        const decoded = jwt.verify(token, jwtSecret);
         req.userdetails = decoded.userdetails;
         
         next();

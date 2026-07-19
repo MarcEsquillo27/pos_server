@@ -40,9 +40,18 @@ router.post("/api/getPerAccount", async (req, res) => {
             return res.status(401).json({ message: "Invalid username or password." });
         }
 
+        const jwtSecret = process.env.JWT_SECRET || process.env.secret_key;
+
+        if (!jwtSecret) {
+            console.error("JWT_SECRET is not configured.");
+            return res.status(503).json({
+                message: "The login service is not configured correctly."
+            });
+        }
+
         const token = jwt.sign(
             { userdetails: accounts },
-            process.env.secret_key,
+            jwtSecret,
             { expiresIn: "2h" }
         );
 
