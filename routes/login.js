@@ -18,36 +18,41 @@ router.get('/sampleLang', verifyToken, (req,res) =>{
 })
 
 
-router.get("/api/getPerAccount/:username/:password", (req, res) => {
-    console.log("NAGANA")
-    let username = req.params.username
-    let sql = `SELECT * FROM accounts WHERE username = '${username}'`;
-    connection.raw(sql).then((body) => {
-  
-        let hashed_password = body[0][0].password
-        const plainTextPassword = req.params.password;
+router.post("/api/getPerAccount", async (req, res) => {
+    const { username, password } = req.body;
 
-// Assuming storedHashedPassword is the hashed password stored in the database
-const storedHashedPassword = hashed_password;
-
-bcrypt.compare(plainTextPassword, storedHashedPassword, function(err, result) {
-    if (err) {
-        // Handle error
+    if (!username || !password) {
+        return res.status(400).json({ message: "Username and password are required." });
     }
-    if (result) {
-        console.log("Passwords match!");
-        const token = jwt.sign({ userdetails: body[0] }, process.env.secret_key,{ expiresIn: '2h',});
 
-        res.status(200).json({ token:token, userdetails:  body[0] });
-        
-    } else {
-        console.log("Passwords do not match.");
+    try {
+        const accounts = await connection("accounts")
+            .where({ username })
+            .select("*");
+
+        if (accounts.length === 0) {
+            return res.status(401).json({ message: "Invalid username or password." });
+        }
+
+        const passwordMatches = await bcrypt.compare(password, accounts[0].password);
+
+        if (!passwordMatches) {
+            return res.status(401).json({ message: "Invalid username or password." });
+        }
+
+        const token = jwt.sign(
+            { userdetails: accounts },
+            process.env.secret_key,
+            { expiresIn: "2h" }
+        );
+
+        return res.status(200).json({ token, userdetails: accounts });
+    } catch (error) {
+        console.error("Login database error:", error);
+        return res.status(503).json({
+            message: "The login service is temporarily unavailable."
+        });
     }
-});
-    }).catch(error => {
-        console.error(error);
-        res.status(500).send("Internal Server Error");
-    });
 });
 
 
