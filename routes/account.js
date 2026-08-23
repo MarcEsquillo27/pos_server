@@ -98,11 +98,7 @@ bcrypt.hash(req.body.password, saltRounds)
 
 //UPDATE INVENTORY
 router.post("/api/updateAccount", (req, res) => {
-
-    const saltRounds = 10;
-    bcrypt.hash(req.body.password, saltRounds)
-  .then(hash => {
-    req.body.password = hash
+    delete req.body.password
         let username = req.body.username
         let fullname = req.body.fullname
         req.body.access = JSON.stringify(req.body.access)
@@ -129,8 +125,34 @@ router.post("/api/updateAccount", (req, res) => {
             console.error(error);
             res.status(500).send("Internal Server Error");
         });
-  })
-   
+});
+
+router.post("/api/changePassword", (req, res) => {
+    const { id, password } = req.body;
+    const passwordIsValid =
+        typeof password === "string" &&
+        password.length >= 8 &&
+        /[a-z]/.test(password) &&
+        /[A-Z]/.test(password) &&
+        /\d/.test(password) &&
+        /[^A-Za-z0-9]/.test(password);
+
+    if (!id || !passwordIsValid) {
+        return res.status(400).json({ message: "A valid account and password are required." });
+    }
+
+    bcrypt.hash(password, 10)
+        .then(hash => connection("accounts").where({ id }).update({ password: hash }))
+        .then(updatedRows => {
+            if (!updatedRows) {
+                return res.status(404).json({ message: "Account not found." });
+            }
+            res.json({ message: "Password updated successfully." });
+        })
+        .catch(error => {
+            console.error(error);
+            res.status(500).json({ message: "Internal Server Error" });
+        });
 });
 
 router.post("/api/deleteAccount", (req, res) => {
